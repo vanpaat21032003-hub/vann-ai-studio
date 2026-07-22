@@ -3,10 +3,13 @@ import { notFound } from "next/navigation";
 
 import { ProductArchiveControl } from "@/app/components/products/ProductArchiveControl";
 import { ProductDeleteControl } from "@/app/components/products/ProductDeleteControl";
+import { ProductImageGallery } from "@/app/components/products/ProductImageGallery";
+import { ProductImageUpload } from "@/app/components/products/ProductImageUpload";
 import { Badge } from "@/app/components/ui/Badge";
 import { Card } from "@/app/components/ui/Card";
 import { PageHeader } from "@/app/components/ui/PageHeader";
 import { getOwnedProduct } from "@/lib/products/data";
+import { getOwnedProductImages } from "@/lib/products/image-data";
 import { getProductStatusLabel, type ProductStatus } from "@/lib/products/schema";
 
 const statusVariants: Record<
@@ -49,6 +52,8 @@ export default async function ProductDetailPage({
   if (!product) {
     notFound();
   }
+
+  const images = await getOwnedProductImages(product.id);
 
   return (
     <div>
@@ -102,6 +107,36 @@ export default async function ProductDetailPage({
           Last updated {formatDate(product.updated_at)}
         </p>
       </Card>
+
+      <section className="mt-8" aria-labelledby="product-images-heading">
+        <div className="mb-4">
+          <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.16em] text-accent-cyan">
+            Private assets
+          </p>
+          <h2
+            className="mt-2 text-xl font-semibold tracking-tight text-text-primary"
+            id="product-images-heading"
+          >
+            Source images
+          </h2>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-text-secondary">
+            Upload private product references for future creative workflows.
+            Previews use short-lived signed access.
+          </p>
+        </div>
+
+        <Card className="p-5 sm:p-6">
+          <ProductImageUpload productId={product.id} />
+        </Card>
+
+        <div className="mt-4 min-w-0">
+          <ProductImageGallery
+            images={images}
+            productId={product.id}
+            productTitle={product.title}
+          />
+        </div>
+      </section>
 
       <section
         className="mt-8 rounded-card border border-border-soft bg-surface-elevated p-5 shadow-card sm:p-6"
