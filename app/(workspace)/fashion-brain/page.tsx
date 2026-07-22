@@ -1,9 +1,23 @@
+import { AppIcon } from "@/app/components/ui/AppIcon";
+import { Card } from "@/app/components/ui/Card";
+import { EmptyState } from "@/app/components/ui/EmptyState";
+import { PageHeader } from "@/app/components/ui/PageHeader";
+
 export default function FashionBrainPage() {
   return (
     <div>
-      <h1 className="text-4xl font-bold">Fashion Brain</h1>
-      <p className="mt-2 text-zinc-400">Develop creative direction and product insights.</p>
-      <p className="mt-4 text-sm text-zinc-500">TODO: Add Fashion Brain workflow.</p>
+      <PageHeader
+        description="Develop creative direction and product insights."
+        eyebrow="Creative intelligence"
+        title="Fashion Brain"
+      />
+      <Card className="mt-[var(--space-section)]">
+        <EmptyState
+          description="Product analysis and structured creative direction are planned for a later approved sprint. No provider or database activity runs on this page."
+          icon={<AppIcon className="size-5" name="brain" />}
+          title="Intelligence workspace prepared"
+        />
+      </Card>
     </div>
   );
 }
