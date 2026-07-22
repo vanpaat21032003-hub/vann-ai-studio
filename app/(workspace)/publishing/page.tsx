@@ -1,9 +1,23 @@
+import { AppIcon } from "@/app/components/ui/AppIcon";
+import { Card } from "@/app/components/ui/Card";
+import { EmptyState } from "@/app/components/ui/EmptyState";
+import { PageHeader } from "@/app/components/ui/PageHeader";
+
 export default function PublishingPage() {
   return (
     <div>
-      <h1 className="text-4xl font-bold">Publishing</h1>
-      <p className="mt-2 text-zinc-400">Prepare affiliate content for publishing channels.</p>
-      <p className="mt-4 text-sm text-zinc-500">TODO: Add publishing workflow.</p>
+      <PageHeader
+        description="Prepare affiliate content for publishing channels."
+        eyebrow="Publishing workspace"
+        title="Publishing"
+      />
+      <Card className="mt-[var(--space-section)]">
+        <EmptyState
+          description="Caption, CTA, hashtag, and channel checklists will be added in a later approved sprint. Nothing is published automatically."
+          icon={<AppIcon className="size-5" name="publishing" />}
+          title="Publishing preparation is ready to grow"
+        />
+      </Card>
     </div>
   );
 }

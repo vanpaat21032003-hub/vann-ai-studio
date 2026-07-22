@@ -1,9 +1,23 @@
+import { AppIcon } from "@/app/components/ui/AppIcon";
+import { Card } from "@/app/components/ui/Card";
+import { EmptyState } from "@/app/components/ui/EmptyState";
+import { PageHeader } from "@/app/components/ui/PageHeader";
+
 export default function MotionStudioPage() {
   return (
     <div>
-      <h1 className="text-4xl font-bold">Motion Studio</h1>
-      <p className="mt-2 text-zinc-400">Turn fashion content into motion-ready creative assets.</p>
-      <p className="mt-4 text-sm text-zinc-500">TODO: Add Motion Studio workflow.</p>
+      <PageHeader
+        description="Turn fashion content into motion-ready creative assets."
+        eyebrow="Motion workspace"
+        title="Motion Studio"
+      />
+      <Card className="mt-[var(--space-section)]">
+        <EmptyState
+          description="Motion prompts, reference assets, and video preparation will arrive in a later approved sprint. No generation runs from this placeholder."
+          icon={<AppIcon className="size-5" name="motion" />}
+          title="Motion workflow not started"
+        />
+      </Card>
     </div>
   );
 }

@@ -1,50 +1,44 @@
-import Link from "next/link";
-
 import { signOut } from "@/app/actions/auth";
-
-const navigation = [
-  { href: "/dashboard", label: "🏠 Dashboard" },
-  { href: "/fashion-studio", label: "🎨 Fashion Studio" },
-  { href: "/fashion-brain", label: "🧠 Fashion Brain" },
-  { href: "/motion-studio", label: "🎬 Motion Studio" },
-  { href: "/publishing", label: "🚀 Publishing" },
-  { href: "/research", label: "📈 Research" },
-];
+import { SidebarNavigation } from "@/app/components/layout/SidebarNavigation";
+import { AppIcon } from "@/app/components/ui/AppIcon";
+import { Button } from "@/app/components/ui/Button";
 
 export default function Sidebar() {
   return (
-    <aside className="flex min-h-screen w-64 flex-col bg-zinc-900 p-6 text-white">
-      <h1 className="mb-8 text-2xl font-bold">Vann AI Studio</h1>
+    <aside className="relative z-20 flex w-full flex-col border-b border-border-soft bg-sidebar/95 px-4 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-panel backdrop-blur-xl lg:sticky lg:top-0 lg:h-dvh lg:max-h-dvh lg:min-h-0 lg:overflow-hidden lg:border-r lg:border-b-0 lg:px-5 lg:pt-6 lg:pb-[max(1.25rem,env(safe-area-inset-bottom))]">
+      <div className="mb-4 flex shrink-0 items-center gap-3 px-1 lg:mb-6 lg:px-2">
+        <div className="relative grid size-10 shrink-0 place-items-center rounded-card border border-accent-cyan/20 bg-gradient-to-br from-accent-cyan/15 to-accent-violet/15 text-accent-cyan shadow-glow">
+          <AppIcon className="size-5" name="sparkles" />
+          <span
+            aria-hidden="true"
+            className="absolute -right-0.5 -top-0.5 size-2 rounded-full bg-accent-success ring-2 ring-sidebar"
+          />
+        </div>
+        <div className="min-w-0">
+          <p className="truncate text-sm font-semibold tracking-tight text-text-primary">
+            Vann AI Studio
+          </p>
+          <p className="mt-0.5 text-xs text-text-muted">Private AI workspace</p>
+        </div>
+      </div>
 
-      <nav aria-label="Main navigation" className="flex-1 space-y-3">
-        {navigation.map((item) => (
-          <Link
-            className="block w-full rounded-lg p-3 text-left transition hover:bg-zinc-800"
-            href={item.href}
-            key={item.href}
-          >
-            {item.label}
-          </Link>
-        ))}
-
-        <div aria-hidden="true" className="border-t border-zinc-700 py-2" />
-
-        <Link
-          className="block w-full rounded-lg p-3 text-left transition hover:bg-zinc-800"
-          href="/settings"
-        >
-          ⚙ Settings
-        </Link>
-      </nav>
-
-      <form action={signOut} className="mt-8 border-t border-zinc-700 pt-4">
-        <button
-          className="w-full rounded-lg p-3 text-left text-sm font-medium text-zinc-300 transition hover:bg-zinc-800 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-          type="submit"
-        >
-          Sign out
-        </button>
-      </form>
+      <SidebarNavigation
+        footer={
+          <form action={signOut} className="mt-2">
+            <Button
+              className="w-full justify-start"
+              size="sm"
+              type="submit"
+              variant="ghost"
+            >
+              <span className="grid size-8 place-items-center rounded-lg border border-border-soft bg-surface-soft text-text-muted">
+                <AppIcon className="size-4" name="sign-out" />
+              </span>
+              Sign out
+            </Button>
+          </form>
+        }
+      />
     </aside>
   );
 }
