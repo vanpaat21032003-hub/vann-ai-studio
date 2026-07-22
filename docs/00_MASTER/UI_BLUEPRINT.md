@@ -11,16 +11,16 @@ Dokumen ini selalu membedakan tiga lapisan:
 - **Target V1 UI:** interface yang harus dibangun melalui sprint terpisah.
 - **Future desktop enhancement:** capability khusus Windows yang belum diputuskan teknologinya.
 
-Dokumen ini tidak mengklaim finished design system. Implementasi saat ini memakai Tailwind CSS dan basic custom placeholder components. Tidak ada formal component library yang telah disetujui atau diadopsi.
+Sprint 2 design system telah completed dengan dark navy futuristic tokens, cyan/violet accents, dan reusable custom UI primitives tanpa external component-library dependency.
 
-Verified live foundation sudah menyediakan tujuh secured application tables, empat private Storage buckets, private owner Auth posture, dan production Supabase connectivity. UI untuk login, Product Library, uploads, AI workflows, dan asset management belum dibangun; blueprint ini mendefinisikan lapisan aplikasi di atas foundation tersebut.
+Verified live foundation sudah menyediakan tujuh secured application tables, empat private Storage buckets, private owner Auth posture, dan production Supabase connectivity. UI untuk Product Library, uploads, AI workflows, dan asset management belum dibangun; blueprint ini mendefinisikan lapisan aplikasi di atas foundation tersebut.
 
 ## 1. Global application shell
 
 ### Current placeholder UI
 
-- Workspace layout menggunakan dark background, fixed-width sidebar `w-64`, dan main content dengan padding `p-10`.
-- Shell belum responsive dan belum session-aware.
+- Workspace layout menggunakan responsive protected shell dengan dark navy background dan accent cyan/violet.
+- Sidebar memiliki active navigation; narrow-screen layout tidak horizontal overflow dan desktop footer tetap visible.
 
 ### Target V1 UI
 
@@ -105,9 +105,8 @@ Header tidak menampilkan secret, user UUID, private Storage URL, atau raw provid
 
 ### Current placeholder UI
 
-- Heading dan product description.
-- Supabase connected/unavailable pill.
-- Tiga placeholder cards: Recent Projects, Quick Actions, Recent Assets.
+- Shared page header, reusable Quick Actions cards, dan empty states untuk Recent Projects serta Recent Assets.
+- Supabase connected/unavailable indicator tetap operational.
 
 ### Target V1 UI
 
@@ -416,22 +415,21 @@ Jangan menampilkan fake sample data sebagai data owner.
 - Icon set konsisten; jangan mencampur emoji, SVG, dan multiple icon libraries tanpa keputusan desain.
 - Product, model, style, image, video, dan project memiliki visual identity yang dapat dibedakan tanpa mengubah shell.
 - Design tokens harus mendukung web dan future desktop wrapper.
-- Jangan menambahkan Shadcn UI atau component library lain sampai Sprint 2 menyetujui dependency dan migration plan.
+- Current Sprint 2 system menggunakan custom primitives; external component library memerlukan dependency review terpisah.
 
 ## Current-to-target summary
 
 | Area | Current placeholder | Target V1 | Future desktop |
 | --- | --- | --- | --- |
-| Navigation | Static sidebar links. | Active, collapsed, responsive, session-aware. | Native shortcut/window preference. |
-| Dashboard | Three placeholder cards + health pill. | Real recent projects/assets/metrics/actions. | Native notification/deep link. |
+| Navigation | Responsive protected shell dengan active sidebar. | Active, collapsed, responsive, session-aware. | Native shortcut/window preference. |
+| Dashboard | Reusable quick-action/empty-state cards + operational health pill. | Real recent projects/assets/metrics/actions. | Native notification/deep link. |
 | Product workflow | Belum ada. | Product Library + guided workflow. | Screenshot/clipboard import. |
 | AI workflow | TODO pages. | Prompt orchestration dan stored outputs. | Background/native handoff bila aman. |
 | Publishing | Placeholder. | TikTok/Shopee preparation checklist. | Native share/export later. |
-| Design system | Tailwind ad hoc. | Approved tokens dan reusable primitives. | Shared tokens; wrapper-specific chrome only. |
+| Design system | Dark navy tokens, cyan/violet accents, dan reusable custom primitives. | Approved tokens dan reusable primitives. | Shared tokens; wrapper-specific chrome only. |
 
 ## UI open decisions
 
-1. **OPEN DECISION:** Design token palette dan approved component library pada Sprint 2.
 2. **OPEN DECISION:** Unit dan UI meaning untuk `models.height`.
 3. **OPEN DECISION:** Model/style/prompt snapshot behavior.
 4. **OPEN DECISION:** First direct AI provider dan budget.
