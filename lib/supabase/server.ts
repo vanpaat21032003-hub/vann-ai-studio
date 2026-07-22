@@ -1,5 +1,10 @@
+import "server-only";
+
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { connection } from "next/server";
+
+const SUPABASE_HEALTH_TIMEOUT_MS = 5_000;
 
 function getSupabaseEnvironment() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -41,4 +46,23 @@ export async function createClient() {
       },
     },
   });
+}
+
+export async function checkSupabaseConnection() {
+  try {
+    await connection();
+
+    const { publishableKey, url } = getSupabaseEnvironment();
+    const response = await fetch(new URL("/auth/v1/health", url), {
+      cache: "no-store",
+      headers: {
+        apikey: publishableKey,
+      },
+      signal: AbortSignal.timeout(SUPABASE_HEALTH_TIMEOUT_MS),
+    });
+
+    return response.ok;
+  } catch {
+    return false;
+  }
 }
