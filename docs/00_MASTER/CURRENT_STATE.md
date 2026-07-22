@@ -23,6 +23,7 @@ Jika repository tidak menyimpan external-platform artifacts tetapi verified live
 
 ### Application foundation
 
+- Sprint 0 — Technical foundation telah completed.
 - Project Next.js App Router tersedia dan menggunakan TypeScript.
 - Tailwind CSS v4 dan PostCSS terkonfigurasi.
 - ESLint menggunakan `eslint-config-next` Core Web Vitals dan TypeScript rules.
@@ -33,7 +34,9 @@ Jika repository tidak menyimpan external-platform artifacts tetapi verified live
 ### Workspace shell and routes
 
 - Route group `app/(workspace)/` tersedia.
-- Shared sidebar tersedia di `app/components/layout/Sidebar.tsx`.
+- Sprint 2 — Design system and application shell telah completed dan diverifikasi di production.
+- Shared responsive protected shell menggunakan visual system dark navy futuristik dengan accent cyan dan violet.
+- Reusable custom UI primitives tersedia untuk icon, badge, button, card, empty state, input, page header, dan section heading.
 - Route berikut tersedia:
   - `/dashboard`
   - `/fashion-studio`
@@ -92,6 +95,7 @@ Product-owner and system-verified live infrastructure facts mengonfirmasi:
 - Anonymous-user authentication disabled.
 - Tepat satu confirmed Auth user tersedia.
 - Tidak ada owner email, UUID, password, atau personal information yang dicatat.
+- Sprint 1 application authentication and route protection telah completed dan diverifikasi di production; owner login, protected navigation, operational Supabase indicator, dan sign out lulus smoke test.
 
 ### Delivery infrastructure
 
@@ -107,16 +111,6 @@ Product-owner and system-verified live infrastructure facts mengonfirmasi:
 - Tidak ada application feature lain yang sedang dimodifikasi dalam branch dokumentasi.
 
 ## Not started
-
-### Authentication and protection
-
-- Login page/UI.
-- Sign-out/logout action/UI.
-- Unauthorized state.
-- Session-aware navigation.
-- Route protection untuk workspace routes.
-- Proxy untuk navigation gating bila diperlukan.
-- Server-side owner authorization pada data operations.
 
 ### Core product capabilities
 
@@ -158,9 +152,9 @@ Product-owner and system-verified live infrastructure facts mengonfirmasi:
 
 ### Product and documentation warnings
 
-- Sebagian besar workspace masih berupa placeholder dengan `TODO`.
-- Sidebar belum memiliki active state, collapsed state, atau responsive mobile behavior.
-- Repository tidak memiliki finished component library atau finished design system. Klaim lama tentang Shadcn UI di `AI_CONTEXT.md` tidak dibuktikan oleh dependency atau komponen saat ini.
+- Sebagian besar workspace masih berupa styled empty state karena product workflows belum diimplementasikan.
+- Sidebar memiliki active state dan responsive behavior; collapsed state dan dedicated mobile drawer belum diimplementasikan.
+- Sprint 2 menyediakan custom design tokens dan reusable primitives tanpa Shadcn dependency.
 - `AI_CONTEXT.md` menggambarkan target user dan module yang lebih luas daripada private affiliate-fashion workspace yang sekarang ditetapkan.
 - Research page saat ini masih placeholder. Domain pertama telah ditetapkan sebagai saham Indonesia; crypto ditunda.
 
@@ -187,11 +181,10 @@ Product-owner and system-verified live infrastructure facts mengonfirmasi:
 
 ### Auth
 
-- Aplikasi belum memiliki login/logout UI atau route protection.
+- Application-layer login, sign-out, session refresh, dan route protection tersedia serta telah diverifikasi di production.
 - Live Email/password Auth enabled.
 - Public signup dan anonymous-user authentication disabled.
 - Tepat satu confirmed owner account tersedia.
-- Application-layer login, sign-out, dan route protection tetap menjadi Sprint 1.
 
 ### Database, RLS, and Storage
 
@@ -206,43 +199,17 @@ Product-owner and system-verified live infrastructure facts mengonfirmasi:
 | Area | Bukti saat ini | Requirement target | Status |
 | --- | --- | --- | --- |
 | Architecture docs | `DATABASE.md`/`ERD.md` belum memuat later `owner_id`, grants, RLS, dan Storage ownership migration. | Live secured schema telah applied. | Documentation drift; alignment task terpisah. |
-| Auth application UI | Live Auth siap, tetapi tidak ada login/logout/protection di code. | Private application memerlukan session-aware UI dan protected routes. | Sprint 1. |
 | Research | Route placeholder menyebut saham Indonesia. | Saham Indonesia adalah first domain; crypto later. | Direction fixed; implementation masih deferred. |
-| UI system | Tailwind placeholder UI tersedia; tidak ada Shadcn components. | Target memerlukan UI konsisten dan accessible. | Sprint 2; jangan klaim design system selesai. |
 | Target users | `AI_CONTEXT.md` menyebut banyak persona dan future business modules. | Master direction menetapkan satu private owner. | Master PRD menjadi arah produk; file lama adalah documentation drift. |
 
 ## Next recommended sprint
 
-### Sprint 1 — Authentication and route protection
+### Sprint 3 — Product Library
 
-Sprint berikutnya tetap authentication UI dan route protection karena repository belum memiliki capability tersebut.
-
-Objective:
-
-- owner dapat login/logout dengan email/password;
-- workspace routes menolak anonymous access;
-- session divalidasi di server;
-- public signup tetap disabled;
-- UI tidak pernah menampilkan token atau secret.
-
-Prerequisites:
-
-1. Vann mengonfirmasi expected login experience dan recovery scope.
-2. Liora meninjau route-protection architecture sesuai Next.js 16 dan `@supabase/ssr`.
-3. Gunakan verified live Auth configuration tanpa mencatat account identity.
-4. Pertahankan existing ownership/RLS/Storage posture tanpa perubahan database pada Sprint 1.
-
-Exit criteria ringkas:
-
-- anonymous request diarahkan ke login;
-- authenticated owner dapat membuka semua frozen workspaces;
-- logout mengakhiri session dan kembali ke login;
-- lint, build, relevant auth tests, dan manual test lulus;
-- tidak ada weakening terhadap RLS atau public access.
+Product Library adalah next implementation sprint. Scope dan acceptance criteria tetap mengikuti approval Sprint 3 terpisah.
 
 ## Open decisions and documentation drift
 
-1. **OPEN DECISION:** Approved UI component library dan design tokens.
 2. **OPEN DECISION:** Unit dan business meaning `models.height`.
 3. **OPEN DECISION:** First direct AI provider dan budget.
 4. **OPEN DECISION:** Versioning/snapshot strategy.

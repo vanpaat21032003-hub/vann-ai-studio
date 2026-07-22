@@ -254,7 +254,7 @@ Product-owner and system-verified live infrastructure facts mengonfirmasi:
 - tepat satu confirmed Auth user tersedia;
 - tidak ada identity detail pribadi yang dicatat dalam dokumen.
 
-Repository masih belum memiliki login UI, logout UI, atau route protection. Ini adalah application-layer work untuk Sprint 1, bukan gap pada live Auth configuration.
+Application-layer login, logout, session refresh, dan route protection telah completed pada Sprint 1 dan verified in production.
 
 ## 20. Database and asset requirements
 
@@ -357,7 +357,7 @@ Live Supabase state:
 - Wizard menunjukkan progress dan menyimpan draft.
 - Tindakan destructive memerlukan konfirmasi eksplisit.
 - Copy-to-clipboard, upload, save, dan retry memberi feedback langsung.
-- Jangan mengklaim design system finished; implementation saat ini adalah placeholder Tailwind dasar.
+- Sprint 2 visual foundation telah completed dengan dark navy futuristic tokens, cyan/violet accents, reusable UI primitives, dan responsive protected shell.
 
 ## 25. Accessibility requirements
 
@@ -467,15 +467,14 @@ Direct AI generation, automated publishing, advanced Research, dan Windows packa
 - Environment configuration tersedia secara lokal dan di Vercel tanpa menyimpan value di repository.
 - GitHub/Vercel integration dan production deployment telah berhasil.
 - Production Dashboard berhasil menampilkan “Supabase connected”.
+- Sprint 1 authentication dan Sprint 2 application shell telah diverifikasi di production.
 
 ### Not implemented
 
-- Login/logout UI dan route protection.
 - Product Library, uploads, AI analysis workflow, asset galleries, publishing automation, dan desktop packaging.
 
 ## 33. Open product decisions
 
-1. **OPEN DECISION:** Approved UI component library dan design tokens.
 2. **OPEN DECISION:** Unit dan business meaning `models.height`.
 3. **OPEN DECISION:** Provider AI pertama yang mendapat direct API integration dan budgetnya.
 4. **OPEN DECISION:** Versioning/snapshot strategy untuk model, style, prompt, dan analysis.

@@ -16,9 +16,9 @@ Status: delivery sequence; future sprint belum disetujui untuk implementasi hany
 | Sprint | Tema | Status |
 | --- | --- | --- |
 | 0 | Technical foundation | COMPLETED |
-| 1 | Authentication and route protection | NOT STARTED — next recommended |
-| 2 | Design system and application shell | NOT STARTED |
-| 3 | Product Library | NOT STARTED |
+| 1 | Authentication and route protection | COMPLETED — production verified |
+| 2 | Design system and application shell | COMPLETED — production verified |
+| 3 | Product Library | NOT STARTED — next implementation sprint |
 | 4 | Product image upload and Storage | NOT STARTED |
 | 5 | Model Library, Style Library, and Prompt Presets | NOT STARTED |
 | 6 | Fashion Studio workflow | NOT STARTED |
@@ -67,7 +67,7 @@ Status: delivery sequence; future sprint belum disetujui untuk implementasi hany
 
 ## Sprint 1 — Authentication and route protection
 
-**Status:** NOT STARTED — next recommended sprint.
+**Status:** COMPLETED dan verified in production.
 
 **Objective:** Menyediakan private owner login/logout dan melindungi seluruh workspace routes.
 
@@ -103,13 +103,13 @@ Status: delivery sequence; future sprint belum disetujui untuk implementasi hany
 
 ## Sprint 2 — Design system and application shell
 
-**Status:** NOT STARTED.
+**Status:** COMPLETED dan verified in production.
 
 **Objective:** Mengubah placeholder shell menjadi UI foundation yang konsisten, responsive, dan accessible.
 
 **User value:** Navigation lebih jelas dan seluruh sprint berikutnya memakai primitives yang stabil.
 
-**Included scope:** Design tokens, typography, spacing, reusable Button/Input/Card/Badge/Table primitives yang disetujui, active sidebar, collapsed state, mobile navigation, workspace header, loading/empty/error patterns.
+**Included scope:** Dark navy futuristic design tokens dengan accent cyan/violet, reusable `AppIcon`, `Badge`, `Button`, `Card`, `EmptyState`, `Input`, `PageHeader`, dan `SectionHeading` primitives, active sidebar, responsive protected shell, workspace headers, dan empty states.
 
 **Excluded scope:** Product data, AI workflows, dashboard metrics nyata, dan broad visual redesign di luar approved blueprint.
 
@@ -123,7 +123,7 @@ Status: delivery sequence; future sprint belum disetujui untuk implementasi hany
 
 **Authentication/RLS impact:** Shell menampilkan authenticated navigation; tidak mengubah policy.
 
-**UI states:** Expanded/collapsed/mobile sidebar, active/focus/hover/disabled, global loading, empty, error, toast.
+**UI states:** Responsive shell, active/focus/hover/disabled navigation, reusable empty states, dan preserved login states.
 
 **Acceptance criteria:** Frozen navigation tetap ada; active state akurat; keyboard navigation berhasil; responsive layout tidak overflow; tidak ada design-system claim tanpa implemented components.
 
@@ -135,11 +135,11 @@ Status: delivery sequence; future sprint belum disetujui untuk implementasi hany
 
 **Rollback considerations:** Components diadopsi bertahap; hindari all-at-once rewrite yang sulit direvert.
 
-**Dependencies:** Sprint 1 dan keputusan component library/design tokens.
+**Dependencies:** Sprint 1 completed; custom design tokens dan primitives menyelesaikan Sprint 2 design-system decision.
 
 ## Sprint 3 — Product Library
 
-**Status:** NOT STARTED.
+**Status:** NOT STARTED — next implementation sprint.
 
 **Objective:** Menyediakan CRUD terkontrol untuk canonical affiliate products.
 
@@ -499,7 +499,6 @@ Status: delivery sequence; future sprint belum disetujui untuk implementasi hany
 
 ## Roadmap open decisions
 
-1. **OPEN DECISION:** Component library dan design tokens sebelum Sprint 2.
 2. **OPEN DECISION:** Unit dan business meaning `models.height`.
 3. **OPEN DECISION:** First direct AI provider dan budget sebelum provider-specific implementation.
 4. **OPEN DECISION:** Versioning/snapshot strategy untuk model, style, prompt, dan analysis.

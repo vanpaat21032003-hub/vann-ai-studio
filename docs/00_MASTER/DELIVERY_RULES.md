@@ -372,7 +372,6 @@ Setiap implementation task melaporkan minimal:
 
 ## 23. Permanent open decisions
 
-- **OPEN DECISION:** Approved UI component library dan tokens.
 - **OPEN DECISION:** Unit dan business meaning `models.height`.
 - **OPEN DECISION:** First direct AI provider dan budget.
 - **OPEN DECISION:** Versioning/snapshot strategy.
