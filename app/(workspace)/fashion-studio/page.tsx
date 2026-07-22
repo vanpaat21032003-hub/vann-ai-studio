@@ -1,6 +1,7 @@
+import Link from "next/link";
+
 import { AppIcon } from "@/app/components/ui/AppIcon";
 import { Card } from "@/app/components/ui/Card";
-import { EmptyState } from "@/app/components/ui/EmptyState";
 import { PageHeader } from "@/app/components/ui/PageHeader";
 
 export default function FashionStudioPage() {
@@ -11,13 +12,35 @@ export default function FashionStudioPage() {
         eyebrow="Creative workspace"
         title="Fashion Studio"
       />
-      <Card className="mt-[var(--space-section)]">
-        <EmptyState
-          description="The guided fashion workflow will be introduced in a later approved sprint. This workspace is ready for product, model, and style composition."
-          icon={<AppIcon className="size-5" name="studio" />}
-          title="Creative canvas coming next"
-        />
-      </Card>
+
+      <section className="mt-[var(--space-section)]">
+        <Card interactive>
+          <Link
+            className="group flex min-h-56 flex-col justify-between p-5 sm:p-7"
+            href="/fashion-studio/products"
+          >
+            <div>
+              <span className="grid size-12 place-items-center rounded-card border border-accent-cyan/15 bg-gradient-to-br from-accent-cyan/10 to-accent-violet/10 text-accent-cyan shadow-glow">
+                <AppIcon className="size-5" name="studio" />
+              </span>
+              <h2 className="mt-6 text-xl font-semibold tracking-tight text-text-primary">
+                Product Library
+              </h2>
+              <p className="mt-2 max-w-xl text-sm leading-6 text-text-secondary">
+                Organize the private product metadata that powers future Fashion
+                Studio workflows.
+              </p>
+            </div>
+            <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-accent-cyan">
+              Open Product Library
+              <AppIcon
+                className="size-4 transition duration-[var(--transition-fast)] group-hover:translate-x-0.5"
+                name="arrow"
+              />
+            </span>
+          </Link>
+        </Card>
+      </section>
     </div>
   );
 }
