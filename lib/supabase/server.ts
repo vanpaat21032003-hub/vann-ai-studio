@@ -40,8 +40,8 @@ export async function createClient() {
             cookieStore.set(name, value, options);
           });
         } catch {
-          // Server Components cannot write cookies. Add a Proxy before relying
-          // on server-side authentication or session refresh.
+          // Server Components cannot write cookies. The Proxy refreshes the
+          // session before rendering authenticated routes.
         }
       },
     },
