@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useEffect, useRef, useState } from "react";
+import { useActionState, useRef, useState } from "react";
 
 import { createModel, updateModel } from "@/lib/models/actions";
 import {
@@ -10,7 +10,7 @@ import {
   HEIGHT_MIN,
   tagsToDisplay,
   type ModelActionState,
-  type ModelRecord,
+  type ModelEditableRecord,
 } from "@/lib/models/schema";
 import { Button } from "@/app/components/ui/Button";
 import { Card } from "@/app/components/ui/Card";
@@ -18,7 +18,7 @@ import { Input } from "@/app/components/ui/Input";
 
 type ModelFormProps = {
   mode: "create" | "edit";
-  model?: ModelRecord;
+  model?: ModelEditableRecord;
 };
 
 type ModelFormAction = (
@@ -40,35 +40,35 @@ function isGenderValue(value: string): value is GenderValue {
 }
 
 export function ModelForm({ mode, model }: ModelFormProps) {
-  const boundUpdate = model ? updateModel.bind(null, model.id) : undefined;
+  const boundUpdate = model?.id ? updateModel.bind(null, model.id) : undefined;
   const action: ModelFormAction =
     mode === "create" ? createModel : boundUpdate!;
   const [state, formAction, pending] = useActionState(action, initialState);
 
   // -------------------------------------------------------------------------
-  // Gender and height default logic
+  // Gender and height default logic (deterministic state initialization)
   //
-  // Rule: when gender changes, update the height default ONLY if the user has
-  // not manually edited the height field. Once the user edits it, gender
-  // changes must not clobber the manual value.
+  // - Create mode: gender defaults to female, height defaults to 170.
+  // - Edit mode with non-null height: height is pre-filled and considered manually established.
+  // - Edit mode with null height: height starts empty and receives gender defaults until manually edited.
   // -------------------------------------------------------------------------
 
   const initialGender =
     model?.gender && isGenderValue(model.gender) ? model.gender : "female";
-
   const [gender, setGender] = useState<GenderValue>(initialGender);
 
-  // The displayed height value in the input — always a whole-number string.
-  const existingHeight =
-    model?.height != null ? String(Math.round(model.height)) : "";
-  const [heightValue, setHeightValue] = useState<string>(existingHeight);
+  const initialHeight =
+    mode === "create"
+      ? String(getDefaultHeight("female"))
+      : model?.height != null
+        ? String(Math.round(model.height))
+        : "";
 
-  // Whether the user has manually modified the height field since the form
-  // loaded. Starts false; becomes true on the first user-initiated change.
-  const userEditedHeight = useRef(false);
+  const [heightValue, setHeightValue] = useState<string>(initialHeight);
 
-  // On gender change, reset height to the gender default ONLY if the user has
-  // not manually edited the field.
+  // Whether height has been manually edited. Initialized to true if edit mode with non-null height.
+  const userEditedHeight = useRef(mode === "edit" && model?.height != null);
+
   function handleGenderChange(newGender: GenderValue) {
     setGender(newGender);
     if (!userEditedHeight.current) {
@@ -80,18 +80,6 @@ export function ModelForm({ mode, model }: ModelFormProps) {
     userEditedHeight.current = true;
     setHeightValue(e.target.value);
   }
-
-  // On initial render for "create" mode, set the height to the default for
-  // the initial gender only once.
-  const defaultSet = useRef(false);
-  useEffect(() => {
-    if (mode === "create" && !defaultSet.current) {
-      defaultSet.current = true;
-      setHeightValue(String(getDefaultHeight(gender)));
-    }
-    // Only run once on mount.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const nameError = state.fieldErrors?.name;
   const heightError = state.fieldErrors?.height;

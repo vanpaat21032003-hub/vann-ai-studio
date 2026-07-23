@@ -40,8 +40,20 @@ export type ModelActionState = {
   error: string | null;
   fieldErrors?: {
     name?: string;
+    gender?: string;
     height?: string;
   };
+};
+
+export type ModelEditableRecord = {
+  id?: string;
+  name: string;
+  gender: string | null;
+  body_type: string | null;
+  height: number | null;
+  style: string | null;
+  pose: string | null;
+  tags: string[];
 };
 
 export type ModelArchiveState = {
@@ -131,10 +143,17 @@ export function parseModelForm(formData: FormData): ParseResult {
   }
 
   const genderRaw = formData.get("gender");
-  const gender =
-    typeof genderRaw === "string" && genderRaw.trim()
-      ? genderRaw.trim()
-      : null;
+  const genderStr = typeof genderRaw === "string" ? genderRaw.trim().toLowerCase() : "";
+  if (genderStr !== "female" && genderStr !== "male") {
+    return {
+      success: false,
+      state: {
+        error: "Select a valid gender (female or male).",
+        fieldErrors: { gender: "Gender must be female or male." },
+      },
+    };
+  }
+  const gender = genderStr;
 
   const bodyTypeRaw = formData.get("body_type");
   const body_type =
@@ -153,20 +172,21 @@ export function parseModelForm(formData: FormData): ParseResult {
   const tagsRaw = formData.get("tags");
   const tags = normalizeTags(typeof tagsRaw === "string" ? tagsRaw : null);
 
-  // Height — whole-number UI; stored as numeric(5,2)
+  // Height — empty becomes null; non-empty must match /^\d+$/ strictly
   const heightRaw = formData.get("height");
   let height: number | null = null;
-  if (typeof heightRaw === "string" && heightRaw.trim()) {
-    const parsed = parseInt(heightRaw.trim(), 10);
-    if (isNaN(parsed) || !isFinite(parsed)) {
+  if (typeof heightRaw === "string" && heightRaw.trim() !== "") {
+    const heightTrimmed = heightRaw.trim();
+    if (!/^\d+$/.test(heightTrimmed)) {
       return {
         success: false,
         state: {
-          error: "Enter a whole number for target height.",
-          fieldErrors: { height: "Target height must be a whole number." },
+          error: "Target height must be a whole number of cm.",
+          fieldErrors: { height: "Enter digits only for target height." },
         },
       };
     }
+    const parsed = Number(heightTrimmed);
     if (parsed < HEIGHT_MIN || parsed > HEIGHT_MAX) {
       return {
         success: false,

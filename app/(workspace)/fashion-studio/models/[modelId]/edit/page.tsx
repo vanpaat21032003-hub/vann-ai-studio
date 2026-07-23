@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ModelForm } from "@/app/components/models/ModelForm";
 import { PageHeader } from "@/app/components/ui/PageHeader";
 import { getOwnedModel } from "@/lib/models/data";
+import type { ModelEditableRecord } from "@/lib/models/schema";
 
 export default async function EditModelPage({
   params,
@@ -16,6 +17,17 @@ export default async function EditModelPage({
   if (!model) {
     notFound();
   }
+
+  const editableModel: ModelEditableRecord = {
+    id: model.id,
+    name: model.name,
+    gender: model.gender,
+    body_type: model.body_type,
+    height: model.height,
+    style: model.style,
+    pose: model.pose,
+    tags: model.tags,
+  };
 
   return (
     <div>
@@ -31,7 +43,7 @@ export default async function EditModelPage({
         eyebrow="Model Library"
         title="Edit model"
       />
-      <ModelForm mode="edit" model={model} />
+      <ModelForm mode="edit" model={editableModel} />
     </div>
   );
 }

@@ -36,7 +36,10 @@ function readSearchParam(value: string | string[] | undefined) {
 function readStatusFilter(
   value: string | string[] | undefined,
 ): ModelStatusFilter {
-  return value === "active" || value === "archived" ? value : "all";
+  if (value === "all" || value === "active" || value === "archived") {
+    return value;
+  }
+  return "active";
 }
 
 export default async function ModelLibraryPage({
@@ -51,7 +54,7 @@ export default async function ModelLibraryPage({
   const search = readSearchParam(params.q).trim().slice(0, 100);
   const status = readStatusFilter(params.status);
   const models = await getOwnedModels({ search, status });
-  const hasFilters = Boolean(search) || status !== "all";
+  const hasFilters = Boolean(search) || status !== "active";
 
   return (
     <div>

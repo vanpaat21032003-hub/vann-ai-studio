@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 
 import { archiveModel, restoreModel } from "@/lib/models/actions";
 import type { ModelArchiveState, ModelStatus } from "@/lib/models/schema";
@@ -21,6 +21,8 @@ export function ModelArchiveControl({
   modelId,
   status,
 }: ModelArchiveControlProps) {
+  const [isConfirming, setIsConfirming] = useState(false);
+
   const archiveAction = archiveModel.bind(null, modelId);
   const restoreAction = restoreModel.bind(null, modelId);
 
@@ -42,7 +44,7 @@ export function ModelArchiveControl({
   const error = archiveState.error || restoreState.error;
 
   if (isArchived && !restoreState.restored) {
-    // Archived — show restore option
+    // Archived — show one-step restore option
     return (
       <div>
         <p className="text-sm leading-6 text-text-secondary">
@@ -79,30 +81,58 @@ export function ModelArchiveControl({
     );
   }
 
-  // Active — show archive option
+  // Active — show archive option with confirmation step
+  if (!isConfirming) {
+    return (
+      <div>
+        <p className="text-sm leading-6 text-text-secondary">
+          Archive this model to remove it from active selectors without deleting
+          its metadata. You can restore it later.
+        </p>
+        <div className="mt-4">
+          <Button
+            size="sm"
+            type="button"
+            variant="secondary"
+            onClick={() => setIsConfirming(true)}
+          >
+            Archive model
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Confirmation state
   return (
     <div>
-      <p className="text-sm leading-6 text-text-secondary">
-        Archive this model to remove it from active selectors without deleting
-        its metadata. You can restore it later.
+      <p className="text-sm font-medium leading-6 text-amber-400">
+        Are you sure you want to archive this model? It will be hidden from active model selectors.
       </p>
-      <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
-        <form action={formArchiveAction}>
-          <Button
-            disabled={pending}
-            size="sm"
-            type="submit"
-            variant="secondary"
-          >
-            {archivePending ? "Archiving…" : "Archive model"}
-          </Button>
-        </form>
+      <form action={formArchiveAction} className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+        <Button
+          disabled={pending}
+          size="sm"
+          type="submit"
+          variant="secondary"
+        >
+          {archivePending ? "Archiving…" : "Confirm archive"}
+        </Button>
+        <Button
+          disabled={pending}
+          size="sm"
+          type="button"
+          variant="ghost"
+          onClick={() => setIsConfirming(false)}
+        >
+          Cancel
+        </Button>
         {error ? (
           <p aria-live="polite" className="text-sm text-accent-danger" role="alert">
             {error}
           </p>
         ) : null}
-      </div>
+      </form>
     </div>
   );
 }
