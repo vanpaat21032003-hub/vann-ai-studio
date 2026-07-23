@@ -31,7 +31,8 @@ async function changeStyleStatus(styleId: string, from: "active" | "archived", t
   const { ownerId, supabase } = await getStyleContext();
   const { data, error } = await supabase.from("styles").update({ status: to }).eq("id", styleId).eq("owner_id", ownerId).eq("status", from).select("id").maybeSingle();
   if (error || !data) return { archived: false, restored: false, error: message };
-  revalidateStyles(styleId); return { archived: to === "archived", restored: to === "active", error: null };
+  revalidateStyles(styleId);
+  redirect(`${PATH}/${styleId}`);
 }
 export async function archiveStyle(styleId: string, previousState: StyleArchiveState, formData: FormData) {
   void previousState;
