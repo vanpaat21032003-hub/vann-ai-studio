@@ -18,9 +18,9 @@ Status: delivery sequence; future sprint belum disetujui untuk implementasi hany
 | 0 | Technical foundation | COMPLETED |
 | 1 | Authentication and route protection | COMPLETED — production verified |
 | 2 | Design system and application shell | COMPLETED — production verified |
-| 3 | Product Library | NOT STARTED — next implementation sprint |
-| 4 | Product image upload and Storage | NOT STARTED |
-| 5 | Model Library, Style Library, and Prompt Presets | NOT STARTED |
+| 3 | Product Library | COMPLETED — production verified |
+| 4 | Product image upload and Storage | COMPLETED — production verified |
+| 5 | Model Library, Style Library, and Prompt Presets | NOT STARTED — next implementation sprint |
 | 6 | Fashion Studio workflow | NOT STARTED |
 | 7 | Product analysis and Fashion Brain | NOT STARTED |
 | 8 | Generated image management and Motion Studio | NOT STARTED |
@@ -139,7 +139,7 @@ Status: delivery sequence; future sprint belum disetujui untuk implementasi hany
 
 ## Sprint 3 — Product Library
 
-**Status:** NOT STARTED — next implementation sprint.
+**Status:** COMPLETED dan verified in production.
 
 **Objective:** Menyediakan CRUD terkontrol untuk canonical affiliate products.
 
@@ -175,7 +175,7 @@ Status: delivery sequence; future sprint belum disetujui untuk implementasi hany
 
 ## Sprint 4 — Product image upload and Storage
 
-**Status:** NOT STARTED.
+**Status:** COMPLETED dan verified in production.
 
 **Objective:** Mengunggah screenshot/source images secara privat dan mengaitkannya ke produk.
 
@@ -211,7 +211,7 @@ Status: delivery sequence; future sprint belum disetujui untuk implementasi hany
 
 ## Sprint 5 — Model Library, Style Library, and Prompt Presets
 
-**Status:** NOT STARTED.
+**Status:** NOT STARTED — next implementation sprint.
 
 **Objective:** Menyediakan reusable creative catalogs untuk workflow.
 
