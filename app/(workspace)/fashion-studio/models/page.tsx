@@ -58,6 +58,14 @@ export default async function ModelLibraryPage({
 
   return (
     <div>
+      <Link
+        className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-text-secondary transition hover:text-accent-cyan"
+        href="/fashion-studio"
+      >
+        <span aria-hidden="true">←</span>
+        Fashion Studio
+      </Link>
+
       <PageHeader
         action={
           <Link

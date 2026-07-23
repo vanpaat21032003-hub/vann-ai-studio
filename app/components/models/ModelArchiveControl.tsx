@@ -37,8 +37,6 @@ export function ModelArchiveControl({
 
   const isArchived =
     status === "archived" || archiveState.archived;
-  const isActive =
-    status === "active" || restoreState.restored;
 
   const pending = archivePending || restorePending;
   const error = archiveState.error || restoreState.error;
@@ -72,19 +70,18 @@ export function ModelArchiveControl({
     );
   }
 
-  if (isActive && restoreState.restored) {
-    // Just restored
-    return (
-      <p className="text-sm leading-6 text-accent-success" role="status">
-        Model restored to active.
-      </p>
-    );
-  }
-
   // Active — show archive option with confirmation step
   if (!isConfirming) {
     return (
       <div>
+        {restoreState.restored ? (
+          <p
+            className="mb-3 text-sm leading-6 text-accent-success"
+            role="status"
+          >
+            Model restored to active.
+          </p>
+        ) : null}
         <p className="text-sm leading-6 text-text-secondary">
           Archive this model to remove it from active selectors without deleting
           its metadata. You can restore it later.
