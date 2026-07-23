@@ -1,8 +1,8 @@
 # Current State — Vann AI Studio
 
-Tanggal baseline: 22 Juli 2026
-Branch dokumentasi: `codex/master-product-documentation`
-Repository baseline: `origin/main` pada commit `835455f685124961f92962d5b9b27f8982631da5`
+Tanggal baseline: 22 Juli 2026; diperbarui 23 Juli 2026 untuk Sprint 3 dan Sprint 4.
+Branch sumber kebenaran: `main`
+Implementation baseline: commit `9a114c9` (implementation baseline after merged PR #10).
 
 ## Cara membaca status
 
@@ -104,20 +104,36 @@ Product-owner and system-verified live infrastructure facts mengonfirmasi:
 - `origin/main` adalah baseline branch saat dokumen ini dibuat.
 - Environment configuration tersedia secara lokal dan di Vercel tanpa menyimpan nilainya di repository.
 - Product owner dan system verification mengonfirmasi GitHub/Vercel integration, production deployment, dan production Dashboard yang menampilkan “Supabase connected”.
+- Sprint 3 dan Sprint 4 merged ke `main` melalui PR #9 dan PR #10; keduanya telah production verified.
+
+### Product Library
+
+- Sprint 3 — Product Library telah completed dan diverifikasi di production.
+- Product list/card view dengan search dan status filter tersedia di `/fashion-studio/products`.
+- Create, detail, edit, dan archive tersedia melalui server actions.
+- Permanent deletion tersedia dengan title-confirmation guard; delete diblokir jika product masih memiliki image records.
+- Owner-scoped RLS ditegakkan: `owner_id` selalu diambil dari `auth.getClaims().sub`, tidak pernah dari client-supplied data.
+- Loading, error, not-found, dan filtered-empty states tersedia.
+- `lib/products/schema.ts`, `lib/products/data.ts`, `lib/products/actions.ts`, serta komponen dan route pages tersedia.
+
+### Private product images
+
+- Sprint 4 — Private product image upload and Storage telah completed dan diverifikasi di production.
+- Private `products` bucket digunakan; tidak ada public URL yang digunakan atau disimpan.
+- Storage object path mengikuti pola `{ownerId}/{productId}/{uuid}.{ext}`; ownership diverifikasi server-side sebelum setiap operasi.
+- Upload hanya menerima JPEG, PNG, dan WebP dengan batas maksimum 8 MB; validasi dilakukan pada metadata yang disimpan Supabase Storage, bukan hanya pada client input.
+- Preview menggunakan short-lived signed URL dengan TTL 5 menit; signed URL tidak disimpan sebagai permanent reference.
+- Deletion menghapus Storage object terlebih dahulu, kemudian metadata record di `product_images`; orphaned object dibersihkan jika insert metadata gagal.
+- `lib/products/image-constants.ts`, `lib/products/image-data.ts`, `lib/products/image-actions.ts`, `ProductImageUpload.tsx`, `ProductImageGallery.tsx`, dan `ProductImageDeleteControl.tsx` tersedia.
 
 ## In progress
 
-- Master product documentation di `docs/00_MASTER/` sedang disiapkan pada branch khusus ini.
-- Tidak ada application feature lain yang sedang dimodifikasi dalam branch dokumentasi.
+- Tidak ada application feature yang sedang dalam progress saat ini.
 
 ## Not started
 
 ### Core product capabilities
 
-- Product Library list/card view.
-- Create/edit/detail/archive product.
-- Product screenshot upload.
-- Private asset gallery.
 - Model Library.
 - Style Library.
 - Prompt Presets UI.
@@ -204,18 +220,19 @@ Product-owner and system-verified live infrastructure facts mengonfirmasi:
 
 ## Next recommended sprint
 
-### Sprint 3 — Product Library
+### Sprint 5 — Model Library, Style Library, and Prompt Presets
 
-Product Library adalah next implementation sprint. Scope dan acceptance criteria tetap mengikuti approval Sprint 3 terpisah.
+Sprint 5 adalah next implementation sprint. Scope dan acceptance criteria mengikuti approval Sprint 5 terpisah. Dua open decision harus diselesaikan sebelum implementasi dimulai: unit dan business meaning `models.height`, dan apakah model-reference image upload termasuk dalam Sprint 5 atau ditunda.
 
 ## Open decisions and documentation drift
 
-2. **OPEN DECISION:** Unit dan business meaning `models.height`.
-3. **OPEN DECISION:** First direct AI provider dan budget.
-4. **OPEN DECISION:** Versioning/snapshot strategy.
-5. **OPEN DECISION:** Asset retention dan deletion lifecycle.
-6. **OPEN DECISION:** Model-reference consent dan provenance.
-7. **OPEN DECISION:** Numeric success metrics dan performance budgets.
-8. **OPEN DECISION:** Desktop wrapper dan Windows distribution decisions.
-9. **OPEN DECISION:** Apakah `AI_CONTEXT.md` diperbarui melalui documentation-only task terpisah.
-10. Documentation drift: `DATABASE.md` dan `ERD.md` belum merefleksikan applied ownership, grants, RLS, dan Storage migration.
+2. **OPEN DECISION:** Unit dan business meaning `models.height` — harus diputuskan sebelum Sprint 5 ModelForm diimplementasikan.
+3. **OPEN DECISION:** Apakah model-reference image upload termasuk dalam Sprint 5 atau ditunda ke sprint berikutnya.
+4. **OPEN DECISION:** First direct AI provider dan budget.
+5. **OPEN DECISION:** Versioning/snapshot strategy.
+6. **OPEN DECISION:** Asset retention dan deletion lifecycle.
+7. **OPEN DECISION:** Model-reference consent dan provenance.
+8. **OPEN DECISION:** Numeric success metrics dan performance budgets.
+9. **OPEN DECISION:** Desktop wrapper dan Windows distribution decisions.
+10. **OPEN DECISION:** Apakah `AI_CONTEXT.md` diperbarui melalui documentation-only task terpisah.
+11. Documentation drift: `DATABASE.md` dan `ERD.md` belum merefleksikan applied ownership, grants, RLS, dan Storage migration.
