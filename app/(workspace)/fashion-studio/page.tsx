@@ -67,6 +67,33 @@ export default function FashionStudioPage() {
             </span>
           </Link>
         </Card>
+
+        <Card interactive>
+          <Link
+            className="group flex min-h-56 flex-col justify-between p-5 sm:p-7"
+            href="/fashion-studio/styles"
+          >
+            <div>
+              <span className="grid size-12 place-items-center rounded-card border border-accent-blue/15 bg-gradient-to-br from-accent-blue/10 to-accent-violet/10 text-accent-blue shadow-glow">
+                <AppIcon className="size-5" name="sparkles" />
+              </span>
+              <h2 className="mt-6 text-xl font-semibold tracking-tight text-text-primary">
+                Style Library
+              </h2>
+              <p className="mt-2 max-w-xl text-sm leading-6 text-text-secondary">
+                Save reusable lighting, camera, background, and mood directions
+                for consistent creative workflows.
+              </p>
+            </div>
+            <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-accent-blue">
+              Open Style Library
+              <AppIcon
+                className="size-4 transition duration-[var(--transition-fast)] group-hover:translate-x-0.5"
+                name="arrow"
+              />
+            </span>
+          </Link>
+        </Card>
       </section>
     </div>
   );
