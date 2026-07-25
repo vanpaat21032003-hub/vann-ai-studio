@@ -14,6 +14,7 @@ import {
 
 const SAVE_ERROR = "Unable to save this product. Please try again.";
 const ARCHIVE_ERROR = "Unable to archive this product. Please try again.";
+const RESTORE_ERROR = "Unable to restore this product. Please try again.";
 const DELETE_ERROR = "Unable to delete this product. Please try again.";
 const PRODUCT_LIBRARY_PATH = "/fashion-studio/products";
 
@@ -99,7 +100,7 @@ export async function archiveProduct(
   void _formData;
 
   if (!isProductId(productId)) {
-    return { archived: false, error: ARCHIVE_ERROR };
+    return { error: ARCHIVE_ERROR };
   }
 
   const { ownerId, supabase } = await getProductContext();
@@ -108,15 +109,46 @@ export async function archiveProduct(
     .update({ status: "archived" })
     .eq("id", productId)
     .eq("owner_id", ownerId)
+    .in("status", ["draft", "analyzed"])
     .select("id")
     .maybeSingle();
 
   if (error || !data) {
-    return { archived: false, error: ARCHIVE_ERROR };
+    return { error: ARCHIVE_ERROR };
   }
 
   revalidateProductLibrary(productId);
-  return { archived: true, error: null };
+  redirect(`${PRODUCT_LIBRARY_PATH}/${productId}`);
+}
+
+export async function restoreProduct(
+  productId: string,
+  _previousState: ArchiveProductState,
+  _formData: FormData,
+): Promise<ArchiveProductState> {
+  void _previousState;
+  void _formData;
+
+  if (!isProductId(productId)) {
+    return { error: RESTORE_ERROR };
+  }
+
+  const { ownerId, supabase } = await getProductContext();
+  const { data, error } = await supabase
+    .from("products")
+    .update({ status: "draft" })
+    .eq("id", productId)
+    .eq("owner_id", ownerId)
+    .eq("status", "archived")
+    .select("id")
+    .maybeSingle();
+
+  if (error || !data) {
+    return { error: RESTORE_ERROR };
+  }
+
+  revalidateProductLibrary(productId);
+  redirect(`${PRODUCT_LIBRARY_PATH}/${productId}`);
 }
 
 export async function deleteProduct(

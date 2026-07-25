@@ -34,7 +34,6 @@ export type DeleteProductState = {
 };
 
 export type ArchiveProductState = {
-  archived: boolean;
   error: string | null;
 };
 
