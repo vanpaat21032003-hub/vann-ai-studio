@@ -100,7 +100,7 @@ export async function archiveProduct(
   void _formData;
 
   if (!isProductId(productId)) {
-    return { archived: false, restored: false, error: ARCHIVE_ERROR };
+    return { error: ARCHIVE_ERROR };
   }
 
   const { ownerId, supabase } = await getProductContext();
@@ -114,11 +114,11 @@ export async function archiveProduct(
     .maybeSingle();
 
   if (error || !data) {
-    return { archived: false, restored: false, error: ARCHIVE_ERROR };
+    return { error: ARCHIVE_ERROR };
   }
 
   revalidateProductLibrary(productId);
-  return { archived: true, restored: false, error: null };
+  redirect(`${PRODUCT_LIBRARY_PATH}/${productId}`);
 }
 
 export async function restoreProduct(
@@ -130,7 +130,7 @@ export async function restoreProduct(
   void _formData;
 
   if (!isProductId(productId)) {
-    return { archived: false, restored: false, error: RESTORE_ERROR };
+    return { error: RESTORE_ERROR };
   }
 
   const { ownerId, supabase } = await getProductContext();
@@ -144,11 +144,11 @@ export async function restoreProduct(
     .maybeSingle();
 
   if (error || !data) {
-    return { archived: false, restored: false, error: RESTORE_ERROR };
+    return { error: RESTORE_ERROR };
   }
 
   revalidateProductLibrary(productId);
-  return { archived: false, restored: true, error: null };
+  redirect(`${PRODUCT_LIBRARY_PATH}/${productId}`);
 }
 
 export async function deleteProduct(

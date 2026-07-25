@@ -12,8 +12,6 @@ type ProductArchiveControlProps = {
 };
 
 const initialState: ArchiveProductState = {
-  archived: false,
-  restored: false,
   error: null,
 };
 
@@ -31,11 +29,9 @@ export function ProductArchiveControl({
     restoreAction,
     initialState,
   );
-  const isArchived = status === "archived" || archiveState.archived;
   const pending = archivePending || restorePending;
-  const error = archiveState.error || restoreState.error;
 
-  if (isArchived && !restoreState.restored) {
+  if (status === "archived") {
     return (
       <div>
         <p className="text-sm leading-6 text-text-secondary">
@@ -53,13 +49,13 @@ export function ProductArchiveControl({
               {restorePending ? "Restoring…" : "Restore product"}
             </Button>
           </form>
-          {error ? (
+          {restoreState.error ? (
             <p
               aria-live="polite"
               className="text-sm text-accent-danger"
               role="alert"
             >
-              {error}
+              {restoreState.error}
             </p>
           ) : null}
         </div>
@@ -69,11 +65,6 @@ export function ProductArchiveControl({
 
   return (
     <form action={formArchiveAction}>
-      {restoreState.restored ? (
-        <p className="mb-3 text-sm leading-6 text-accent-success" role="status">
-          Product restored to draft.
-        </p>
-      ) : null}
       <p className="text-sm leading-6 text-text-secondary">
         Archive this product to remove it from active work without deleting its
         metadata.
@@ -82,9 +73,9 @@ export function ProductArchiveControl({
         <Button disabled={pending} size="sm" type="submit" variant="secondary">
           {archivePending ? "Archiving…" : "Archive product"}
         </Button>
-        {error ? (
+        {archiveState.error ? (
           <p aria-live="polite" className="text-sm text-accent-danger" role="alert">
-            {error}
+            {archiveState.error}
           </p>
         ) : null}
       </div>
