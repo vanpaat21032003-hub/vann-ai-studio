@@ -114,7 +114,7 @@ export function PromptComposer({ models, presets, products, styles }: PromptComp
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent-cyan">Deterministic output</p>
             <h2 className="mt-2 text-lg font-semibold tracking-tight text-text-primary">Final Prompt</h2>
           </div>
-          {prompt ? <PromptCopyButton prompt={prompt} /> : null}
+          {prompt ? <PromptCopyButton key={prompt} prompt={prompt} /> : null}
         </div>
         {prompt ? (
           <pre className="mt-6 max-w-full overflow-x-auto whitespace-pre-wrap break-words rounded-control border border-border-soft bg-app/70 p-4 font-sans text-sm leading-6 text-text-primary">{prompt}</pre>
