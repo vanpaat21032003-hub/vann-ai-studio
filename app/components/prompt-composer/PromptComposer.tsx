@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
+import { PromptEnhancementPanel } from "@/app/components/prompt-composer/PromptEnhancementPanel";
 import { PromptCopyButton } from "@/app/components/prompt-presets/PromptCopyButton";
 import { Card } from "@/app/components/ui/Card";
 import { composePrompt } from "@/lib/prompt-composer/compose";
@@ -133,7 +134,10 @@ export function PromptComposer({ models, presets, products, styles }: PromptComp
           {prompt ? <PromptCopyButton key={prompt} prompt={prompt} /> : null}
         </div>
         {prompt ? (
-          <pre className="mt-6 max-w-full overflow-x-auto whitespace-pre-wrap break-words rounded-control border border-border-soft bg-app/70 p-4 font-sans text-sm leading-6 text-text-primary">{prompt}</pre>
+          <>
+            <pre className="mt-6 max-w-full overflow-x-auto whitespace-pre-wrap break-words rounded-control border border-border-soft bg-app/70 p-4 font-sans text-sm leading-6 text-text-primary">{prompt}</pre>
+            <PromptEnhancementPanel key={prompt} prompt={prompt} />
+          </>
         ) : (
           <div className="mt-6 rounded-control border border-dashed border-border-strong bg-surface-soft p-5">
             <p className="font-semibold text-text-primary">Your prompt will appear here.</p>

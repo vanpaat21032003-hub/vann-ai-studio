@@ -4,7 +4,13 @@ import { useState } from "react";
 
 import { Button } from "@/app/components/ui/Button";
 
-export function PromptCopyButton({ prompt }: { prompt: string }) {
+export function PromptCopyButton({
+  label = "Copy prompt",
+  prompt,
+}: {
+  label?: string;
+  prompt: string;
+}) {
   const [message, setMessage] = useState<string | null>(null);
 
   async function copyPrompt() {
@@ -17,5 +23,18 @@ export function PromptCopyButton({ prompt }: { prompt: string }) {
     }
   }
 
-  return <div className="flex flex-wrap items-center gap-3"><Button onClick={copyPrompt} size="sm" type="button" variant="secondary">Copy prompt</Button><p aria-live="polite" className={message === "Prompt copied." ? "text-sm text-accent-success" : "text-sm text-accent-danger"} role={message ? "status" : undefined}>{message}</p></div>;
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      <Button onClick={copyPrompt} size="sm" type="button" variant="secondary">
+        {label}
+      </Button>
+      <p
+        aria-live="polite"
+        className={message === "Prompt copied." ? "text-sm text-accent-success" : "text-sm text-accent-danger"}
+        role={message ? "status" : undefined}
+      >
+        {message}
+      </p>
+    </div>
+  );
 }
