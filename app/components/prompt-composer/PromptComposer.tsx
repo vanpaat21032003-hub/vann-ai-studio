@@ -19,7 +19,7 @@ type PromptComposerProps = {
 };
 
 const selectClassName =
-  "min-h-12 w-full rounded-control border border-border-soft bg-app/70 px-4 py-3 text-sm text-text-primary shadow-inner shadow-black/10 transition duration-[var(--transition-fast)] hover:border-border-strong focus:border-accent-cyan/60 focus:ring-2 focus:ring-accent-cyan/15 disabled:cursor-not-allowed disabled:opacity-60";
+  "min-h-12 w-full appearance-none rounded-control border border-border-soft bg-app/70 py-3 pr-14 pl-4 text-sm text-text-primary shadow-inner shadow-black/10 transition duration-[var(--transition-fast)] hover:border-border-strong focus:border-accent-cyan/60 focus:ring-2 focus:ring-accent-cyan/15 disabled:cursor-not-allowed disabled:opacity-60";
 
 function SelectField({
   emptyHref,
@@ -47,20 +47,36 @@ function SelectField({
       <label className="mb-2 block text-sm font-semibold text-text-primary" htmlFor={id}>
         {label}
       </label>
-      <select
-        className={selectClassName}
-        disabled={isEmpty}
-        id={id}
-        onChange={(event) => onChange(event.target.value)}
-        value={value}
-      >
-        <option value="">{isEmpty ? `No ${label.toLowerCase()} available` : placeholder}</option>
-        {options.map((option) => (
-          <option key={option.id} value={option.id}>
-            {option.name}
-          </option>
-        ))}
-      </select>
+      <div className="relative">
+        <select
+          className={selectClassName}
+          disabled={isEmpty}
+          id={id}
+          onChange={(event) => onChange(event.target.value)}
+          value={value}
+        >
+          <option value="">{isEmpty ? `No ${label.toLowerCase()} available` : placeholder}</option>
+          {options.map((option) => (
+            <option key={option.id} value={option.id}>
+              {option.name}
+            </option>
+          ))}
+        </select>
+        <svg
+          aria-hidden="true"
+          className="pointer-events-none absolute top-1/2 right-5 size-4 -translate-y-1/2 text-text-muted"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="m8 10 4 4 4-4"
+            stroke="currentColor"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="1.8"
+          />
+        </svg>
+      </div>
       {isEmpty ? (
         <p className="mt-2 text-sm leading-6 text-text-secondary">
           Add one in the{" "}
