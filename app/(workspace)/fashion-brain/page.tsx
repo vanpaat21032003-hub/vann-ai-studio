@@ -23,6 +23,30 @@ export default function FashionBrainPage() {
       <Card interactive className="mt-4">
         <Link
           className="group flex items-center justify-between gap-5 p-5 sm:p-6"
+          href="/fashion-brain/composer"
+        >
+          <div className="flex min-w-0 items-center gap-4">
+            <span className="grid size-11 shrink-0 place-items-center rounded-card border border-accent-cyan/15 bg-gradient-to-br from-accent-cyan/10 to-accent-violet/10 text-accent-cyan">
+              <AppIcon className="size-5" name="sparkles" />
+            </span>
+            <div>
+              <h2 className="text-base font-semibold text-text-primary">
+                Prompt Composer
+              </h2>
+              <p className="mt-1 text-sm leading-6 text-text-secondary">
+                Combine product, model, style, and preset records into a ready-to-copy prompt.
+              </p>
+            </div>
+          </div>
+          <AppIcon
+            className="size-4 shrink-0 text-text-muted transition group-hover:translate-x-0.5 group-hover:text-accent-cyan"
+            name="arrow"
+          />
+        </Link>
+      </Card>
+      <Card interactive className="mt-4">
+        <Link
+          className="group flex items-center justify-between gap-5 p-5 sm:p-6"
           href="/fashion-brain/presets"
         >
           <div className="flex min-w-0 items-center gap-4">
