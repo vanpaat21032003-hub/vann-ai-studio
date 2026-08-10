@@ -3,6 +3,7 @@ import "server-only";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { connection } from "next/server";
+import { cache } from "react";
 
 const SUPABASE_HEALTH_TIMEOUT_MS = 5_000;
 
@@ -25,7 +26,7 @@ function getSupabaseEnvironment() {
   return { publishableKey, url };
 }
 
-export async function createClient() {
+const createClientForRequest = cache(async () => {
   const { publishableKey, url } = getSupabaseEnvironment();
   const cookieStore = await cookies();
 
@@ -46,6 +47,10 @@ export async function createClient() {
       },
     },
   });
+});
+
+export async function createClient() {
+  return createClientForRequest();
 }
 
 export async function checkSupabaseConnection() {
