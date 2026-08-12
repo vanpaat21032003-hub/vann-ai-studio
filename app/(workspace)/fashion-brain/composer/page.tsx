@@ -10,12 +10,10 @@ import { getOwnedStyles } from "@/lib/styles/data";
 export const dynamic = "force-dynamic";
 
 export default async function PromptComposerPage() {
-  const [allProducts, models, styles, presets] = await Promise.all([
-    getOwnedProducts({ search: "", status: "all" }),
-    getOwnedModels({ search: "", status: "active" }),
-    getOwnedStyles({ search: "", status: "active" }),
-    getOwnedPromptPresets({ search: "", status: "active" }),
-  ]);
+  const allProducts = await getOwnedProducts({ search: "", status: "all" });
+  const models = await getOwnedModels({ search: "", status: "active" });
+  const styles = await getOwnedStyles({ search: "", status: "active" });
+  const presets = await getOwnedPromptPresets({ search: "", status: "active" });
   const products = allProducts.filter((product) => product.status !== "archived");
 
   return (
