@@ -1,24 +1,14 @@
 import "server-only";
 
-import { redirect } from "next/navigation";
-
-import { createClient } from "@/lib/supabase/server";
 import {
   isProductId,
   PRODUCT_SELECT,
   type ProductRecord,
 } from "@/lib/products/schema";
+import { getAuthenticatedContext } from "@/lib/supabase/auth";
 
 export async function getProductContext() {
-  const supabase = await createClient();
-  const { data, error } = await supabase.auth.getClaims();
-  const ownerId = data?.claims?.sub;
-
-  if (error || typeof ownerId !== "string" || !ownerId) {
-    redirect("/login");
-  }
-
-  return { ownerId, supabase };
+  return getAuthenticatedContext();
 }
 
 export type ProductListFilters = {

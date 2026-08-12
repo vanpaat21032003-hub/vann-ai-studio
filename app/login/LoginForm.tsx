@@ -1,17 +1,24 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 
 import { signIn, type LoginState } from "@/app/actions/auth";
 import { AppIcon } from "@/app/components/ui/AppIcon";
 import { Button } from "@/app/components/ui/Button";
 import { Input } from "@/app/components/ui/Input";
 
-const initialState: LoginState = { error: null };
+const initialState: LoginState = { error: null, success: false };
 
 export default function LoginForm() {
   const [state, formAction, pending] = useActionState(signIn, initialState);
   const hasError = Boolean(state.error);
+  const transitioning = pending || state.success;
+
+  useEffect(() => {
+    if (state.success) {
+      window.location.replace("/dashboard");
+    }
+  }, [state.success]);
 
   return (
     <form action={formAction} className="mt-8 space-y-5">
@@ -25,7 +32,7 @@ export default function LoginForm() {
         <Input
           aria-describedby={hasError ? "login-error" : undefined}
           autoComplete="email"
-          disabled={pending}
+          disabled={transitioning}
           error={hasError}
           id="email"
           name="email"
@@ -45,7 +52,7 @@ export default function LoginForm() {
         <Input
           aria-describedby={hasError ? "login-error" : undefined}
           autoComplete="current-password"
-          disabled={pending}
+          disabled={transitioning}
           error={hasError}
           id="password"
           name="password"
@@ -64,9 +71,9 @@ export default function LoginForm() {
         {state.error}
       </p>
 
-      <Button className="w-full" disabled={pending} type="submit">
-        {pending ? "Signing in…" : "Sign in"}
-        {!pending ? <AppIcon className="size-4" name="arrow" /> : null}
+      <Button className="w-full" disabled={transitioning} type="submit">
+        {transitioning ? "Signing in…" : "Sign in"}
+        {!transitioning ? <AppIcon className="size-4" name="arrow" /> : null}
       </Button>
 
       <p className="text-center text-xs leading-5 text-text-muted">
