@@ -1,28 +1,18 @@
 import "server-only";
 
-import { redirect } from "next/navigation";
-
-import { createClient } from "@/lib/supabase/server";
 import {
   isModelId,
   MODEL_SELECT,
   type ModelRecord,
 } from "@/lib/models/schema";
+import { getAuthenticatedContext } from "@/lib/supabase/auth";
 
 // ---------------------------------------------------------------------------
 // Auth context (mirrors lib/products/data.ts pattern)
 // ---------------------------------------------------------------------------
 
 export async function getModelContext() {
-  const supabase = await createClient();
-  const { data, error } = await supabase.auth.getClaims();
-  const ownerId = data?.claims?.sub;
-
-  if (error || typeof ownerId !== "string" || !ownerId) {
-    redirect("/login");
-  }
-
-  return { ownerId, supabase };
+  return getAuthenticatedContext();
 }
 
 // ---------------------------------------------------------------------------
