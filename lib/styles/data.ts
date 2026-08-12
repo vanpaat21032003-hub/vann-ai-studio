@@ -1,16 +1,10 @@
 import "server-only";
 
-import { redirect } from "next/navigation";
-
-import { createClient } from "@/lib/supabase/server";
 import { isStyleId, STYLE_SELECT, type StyleRecord } from "@/lib/styles/schema";
+import { getAuthenticatedContext } from "@/lib/supabase/auth";
 
 export async function getStyleContext() {
-  const supabase = await createClient();
-  const { data, error } = await supabase.auth.getClaims();
-  const ownerId = data?.claims?.sub;
-  if (error || typeof ownerId !== "string" || !ownerId) redirect("/login");
-  return { ownerId, supabase };
+  return getAuthenticatedContext();
 }
 
 export type StyleListFilters = { search: string; status: "all" | "active" | "archived" };

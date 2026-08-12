@@ -1,24 +1,14 @@
 import "server-only";
 
-import { redirect } from "next/navigation";
-
-import { createClient } from "@/lib/supabase/server";
 import {
   isPromptPresetId,
   PROMPT_PRESET_SELECT,
   type PromptPresetRecord,
 } from "@/lib/prompt-presets/schema";
+import { getAuthenticatedContext } from "@/lib/supabase/auth";
 
 export async function getPromptPresetContext() {
-  const supabase = await createClient();
-  const { data, error } = await supabase.auth.getClaims();
-  const ownerId = data?.claims?.sub;
-
-  if (error || typeof ownerId !== "string" || !ownerId) {
-    redirect("/login");
-  }
-
-  return { ownerId, supabase };
+  return getAuthenticatedContext();
 }
 
 export type PromptPresetListFilters = {

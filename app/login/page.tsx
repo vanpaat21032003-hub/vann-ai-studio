@@ -1,16 +1,9 @@
-import { redirect } from "next/navigation";
-
 import LoginForm from "./LoginForm";
 import { AppIcon } from "@/app/components/ui/AppIcon";
 import { Badge } from "@/app/components/ui/Badge";
 import { Card } from "@/app/components/ui/Card";
-import { hasAuthenticatedSession } from "@/lib/supabase/auth";
 
-export default async function LoginPage() {
-  if (await hasAuthenticatedSession()) {
-    redirect("/dashboard");
-  }
-
+export default function LoginPage() {
   return (
     <main className="relative isolate flex min-h-screen items-center overflow-hidden px-5 py-10 sm:px-8 lg:px-12">
       <div
