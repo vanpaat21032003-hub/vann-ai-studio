@@ -9,6 +9,7 @@ const INVALID_LOGIN_MESSAGE =
 
 export type LoginState = {
   error: string | null;
+  success: boolean;
 };
 
 export async function signIn(
@@ -24,7 +25,7 @@ export async function signIn(
     !email.trim() ||
     !password
   ) {
-    return { error: INVALID_LOGIN_MESSAGE };
+    return { error: INVALID_LOGIN_MESSAGE, success: false };
   }
 
   try {
@@ -35,13 +36,13 @@ export async function signIn(
     });
 
     if (error) {
-      return { error: INVALID_LOGIN_MESSAGE };
+      return { error: INVALID_LOGIN_MESSAGE, success: false };
     }
   } catch {
-    return { error: INVALID_LOGIN_MESSAGE };
+    return { error: INVALID_LOGIN_MESSAGE, success: false };
   }
 
-  redirect("/dashboard");
+  return { error: null, success: true };
 }
 
 export async function signOut() {
