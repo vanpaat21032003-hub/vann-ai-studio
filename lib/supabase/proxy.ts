@@ -42,10 +42,12 @@ function redirectWithSessionCookies(
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
   const environment = getSupabaseEnvironment();
-  const isLoginPage = request.nextUrl.pathname === "/login";
+  const pathname = request.nextUrl.pathname;
+  const isApiRequest = pathname.startsWith("/api/");
+  const isLoginPage = pathname === "/login";
 
   if (!environment) {
-    return isLoginPage
+    return isLoginPage || isApiRequest
       ? supabaseResponse
       : redirectWithSessionCookies(request, supabaseResponse, "/login");
   }
@@ -86,7 +88,7 @@ export async function updateSession(request: NextRequest) {
     isAuthenticated = false;
   }
 
-  if (!isAuthenticated && !isLoginPage) {
+  if (!isAuthenticated && !isLoginPage && !isApiRequest) {
     return redirectWithSessionCookies(request, supabaseResponse, "/login");
   }
 
