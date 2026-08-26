@@ -1,0 +1,18 @@
+{
+  "name": "vann-codex-skill-pack",
+  "version": "0.1.0",
+  "description": "Local Codex plugin for VANN AI Studio coding workflows.",
+  "author": {
+    "name": "VANN AI Studio"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Vann Codex Skill Pack",
+    "shortDescription": "Safe, reviewable VANN coding workflows.",
+    "longDescription": "Bundles five VANN AI Studio skills for safe implementation, release checks, UI review, PR preparation, and regression protection.",
+    "developerName": "VANN AI Studio",
+    "category": "Productivity",
+    "capabilities": [],
+    "defaultPrompt": "Use $vann-safe-coding to plan a safe VANN AI Studio change."
+  }
+}
