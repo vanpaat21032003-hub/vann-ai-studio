@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { ImagePreviewPanel } from "@/app/components/image-generator/ImagePreviewPanel";
+import { GeneratedImageUpload } from "@/app/components/generated-images/GeneratedImageUpload";
 import { PromptCopyButton } from "@/app/components/prompt-presets/PromptCopyButton";
 import { Badge } from "@/app/components/ui/Badge";
 import { Button } from "@/app/components/ui/Button";
@@ -16,6 +17,7 @@ import type { PromptPresetRecord } from "@/lib/prompt-presets/schema";
 import type { StyleRecord } from "@/lib/styles/schema";
 
 type ImageGeneratorProps = {
+  project?: { id: string; name: string; productId: string; modelId: string | null; styleId: string | null } | null;
   models: ModelRecord[];
   presets: PromptPresetRecord[];
   products: ProductRecord[];
@@ -165,14 +167,15 @@ function SelectField({
 }
 
 export function ImageGenerator({
+  project,
   models,
   presets,
   products,
   styles,
 }: ImageGeneratorProps) {
-  const [productId, setProductId] = useState("");
-  const [modelId, setModelId] = useState("");
-  const [styleId, setStyleId] = useState("");
+  const [productId, setProductId] = useState(() => project?.productId ?? "");
+  const [modelId, setModelId] = useState(() => project?.modelId ?? "");
+  const [styleId, setStyleId] = useState(() => project?.styleId ?? "");
   const [presetId, setPresetId] = useState("");
   const [aspectRatio, setAspectRatio] = useState<AspectRatio | "">("");
   const [promptVariant, setPromptVariant] =
@@ -419,6 +422,13 @@ export function ImageGenerator({
   return (
     <div className="mt-[var(--space-section)] grid gap-6 2xl:grid-cols-[minmax(0,1.15fr)_minmax(22rem,0.85fr)]">
       <div className="grid gap-6">
+        {project ? (
+          <Card className="p-5">
+            <p className="font-semibold">Project: {project.name}</p>
+            <p className="mt-2 text-sm text-text-secondary">Durable uploads are saved only to this project. Generator choices do not edit the saved project. Unavailable or archived references are not replaced automatically.</p>
+            <Link className="mt-3 inline-block text-sm text-accent-cyan hover:underline" href={`/fashion-studio/projects/${project.id}#generated-images`}>View project gallery</Link>
+          </Card>
+        ) : null}
         <Card className="p-5 sm:p-6">
           <SectionHeading
             description="Only owned, available library records are shown. Archived products and inactive catalog records are excluded."
@@ -644,8 +654,7 @@ export function ImageGenerator({
               <li>Open your preferred external image-generation tool.</li>
               <li>Generate the image externally.</li>
               <li>
-                Return to Vann AI Studio when generated-asset upload is
-                available.
+                Return here to upload the result to an owned project.
               </li>
             </ol>
             <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -656,8 +665,7 @@ export function ImageGenerator({
                     : "Choose a prompt version to copy."}
                 </p>
                 <p className="mt-1 text-sm leading-6 text-text-secondary">
-                  Generated asset upload will be connected through the
-                  generated-image workflow.
+                  External files can be saved separately with a confirmed prompt snapshot.
                 </p>
               </div>
               <Button
@@ -681,6 +689,17 @@ export function ImageGenerator({
                 {copyMessage}
               </p>
             ) : null}
+          </div>
+        </Card>
+
+        <Card className="p-5 sm:p-6">
+          <SectionHeading title="Save external generated image" description="A separate durable asset; Direct API previews below remain temporary." />
+          <div className="mt-5">
+            {project ? (
+              <GeneratedImageUpload key={project.id} projectId={project.id} projectName={project.name} suggestedPrompt={selectedPrompt} suggestedRatio={aspectRatio} />
+            ) : (
+              <p className="text-sm text-text-secondary">To save an external image, <Link className="text-accent-cyan hover:underline" href="/fashion-studio/projects">open an owned project</Link>, then choose its Image Generator action. The standalone generator remains available.</p>
+            )}
           </div>
         </Card>
 
