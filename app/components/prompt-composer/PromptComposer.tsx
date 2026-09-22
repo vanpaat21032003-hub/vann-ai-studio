@@ -7,6 +7,7 @@ import { PromptEnhancementPanel } from "@/app/components/prompt-composer/PromptE
 import { PromptCopyButton } from "@/app/components/prompt-presets/PromptCopyButton";
 import { Card } from "@/app/components/ui/Card";
 import { composePrompt } from "@/lib/prompt-composer/compose";
+import { IMAGE_WORKFLOW_MODES } from "@/lib/prompt-composer/workflows";
 import type { ModelRecord } from "@/lib/models/schema";
 import type { ProductRecord } from "@/lib/products/schema";
 import type { PromptPresetRecord } from "@/lib/prompt-presets/schema";
@@ -102,7 +103,16 @@ export function PromptComposer({ models, presets, products, styles }: PromptComp
   const style = styles.find((record) => record.id === styleId);
   const preset = presets.find((record) => record.id === presetId);
   const prompt = useMemo(
-    () => (product && model && style && preset ? composePrompt({ product, model, style, preset }) : null),
+    () =>
+      product && model && style && preset
+        ? composePrompt({
+            model,
+            preset,
+            product,
+            style,
+            workflowMode: IMAGE_WORKFLOW_MODES.modelWear,
+          })
+        : null,
     [model, preset, product, style],
   );
   const remaining = [

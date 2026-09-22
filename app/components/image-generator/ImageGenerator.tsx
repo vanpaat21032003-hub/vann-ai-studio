@@ -13,6 +13,12 @@ import { SectionHeading } from "@/app/components/ui/SectionHeading";
 import type { ModelRecord } from "@/lib/models/schema";
 import type { ProductRecord } from "@/lib/products/schema";
 import { composePrompt } from "@/lib/prompt-composer/compose";
+import {
+  createWorkflowTransitionState,
+  getMissingWorkflowSelections,
+  IMAGE_WORKFLOW_MODES,
+  type ImageWorkflowMode,
+} from "@/lib/prompt-composer/workflows";
 import type { PromptPresetRecord } from "@/lib/prompt-presets/schema";
 import type { StyleRecord } from "@/lib/styles/schema";
 
@@ -45,6 +51,23 @@ const ASPECT_RATIOS: Array<{
   { description: "Vertical story", label: "9:16", value: "9:16" },
   { description: "Square", label: "1:1", value: "1:1" },
   { description: "Portrait feed", label: "4:5", value: "4:5" },
+];
+const WORKFLOW_OPTIONS: Array<{
+  description: string;
+  label: string;
+  value: ImageWorkflowMode;
+}> = [
+  {
+    description: "Put the selected fashion product on an AI model.",
+    label: "AI Model Wear",
+    value: IMAGE_WORKFLOW_MODES.modelWear,
+  },
+  {
+    description:
+      "Keep the product on a mannequin and style the surrounding scene.",
+    label: "Mannequin Scene",
+    value: IMAGE_WORKFLOW_MODES.mannequinScene,
+  },
 ];
 const SAFE_ENHANCEMENT_ERROR =
   "Prompt enhancement is temporarily unavailable. Your final prompt is unchanged.";
@@ -173,6 +196,9 @@ export function ImageGenerator({
   products,
   styles,
 }: ImageGeneratorProps) {
+  const [workflowMode, setWorkflowMode] = useState<ImageWorkflowMode>(
+    IMAGE_WORKFLOW_MODES.modelWear,
+  );
   const [productId, setProductId] = useState(() => project?.productId ?? "");
   const [modelId, setModelId] = useState(() => project?.modelId ?? "");
   const [styleId, setStyleId] = useState(() => project?.styleId ?? "");
@@ -196,11 +222,25 @@ export function ImageGenerator({
   const style = styles.find((record) => record.id === styleId);
   const preset = presets.find((record) => record.id === presetId);
   const finalPrompt = useMemo(
-    () =>
-      product && model && style && preset
-        ? composePrompt({ product, model, style, preset })
-        : null,
-    [model, preset, product, style],
+    () => {
+      if (
+        !product ||
+        !style ||
+        !preset ||
+        (workflowMode === IMAGE_WORKFLOW_MODES.modelWear && !model)
+      ) {
+        return null;
+      }
+
+      return composePrompt({
+        model: model ?? null,
+        preset,
+        product,
+        style,
+        workflowMode,
+      });
+    },
+    [model, preset, product, style, workflowMode],
   );
   const enhancedPrompt =
     enhancement.status === "success" ? enhancement.prompt : null;
@@ -208,10 +248,15 @@ export function ImageGenerator({
     promptVariant === "enhanced" ? enhancedPrompt : finalPrompt;
   const isEnhancing = enhancement.status === "loading";
   const hasRequiredSelections = Boolean(
-    product && model && style && preset && aspectRatio,
+    product &&
+      style &&
+      preset &&
+      aspectRatio &&
+      (workflowMode === IMAGE_WORKFLOW_MODES.mannequinScene || model),
   );
   const canGenerate = Boolean(
-    hasRequiredSelections &&
+    workflowMode === IMAGE_WORKFLOW_MODES.modelWear &&
+      hasRequiredSelections &&
       selectedPrompt &&
       selectedPrompt.length <= MAX_PROMPT_LENGTH &&
       !isGenerating,
@@ -245,6 +290,20 @@ export function ImageGenerator({
     setGenerationError(null);
     setCopyMessage(null);
     revokePreview();
+  }
+
+  function changeWorkflowMode(value: ImageWorkflowMode) {
+    if (value === workflowMode) return;
+
+    const resetState = createWorkflowTransitionState();
+    enhancementAbortRef.current?.abort();
+    enhancementAbortRef.current = null;
+    setEnhancement(resetState.enhancement);
+    setPromptVariant(resetState.promptVariant);
+    setGenerationError(resetState.generationError);
+    setCopyMessage(resetState.copyMessage);
+    revokePreview();
+    setWorkflowMode(value);
   }
 
   function changeCompositionSelection(
@@ -412,12 +471,14 @@ export function ImageGenerator({
   }
 
   const missingSelections = [
-    !product && "product",
-    !model && "model",
-    !style && "style",
-    !preset && "prompt preset",
-    !aspectRatio && "aspect ratio",
-  ].filter((value): value is string => Boolean(value));
+    ...getMissingWorkflowSelections(workflowMode, {
+      hasAspectRatio: Boolean(aspectRatio),
+      hasModel: Boolean(model),
+      hasPreset: Boolean(preset),
+      hasProduct: Boolean(product),
+      hasStyle: Boolean(style),
+    }),
+  ];
 
   return (
     <div className="mt-[var(--space-section)] grid gap-6 2xl:grid-cols-[minmax(0,1.15fr)_minmax(22rem,0.85fr)]">
@@ -431,8 +492,47 @@ export function ImageGenerator({
         ) : null}
         <Card className="p-5 sm:p-6">
           <SectionHeading
+            description="Choose how the product should be presented. Switching modes keeps your project selections but resets temporary prompt and preview output."
+            title="1. Choose workflow"
+          />
+          <fieldset className="mt-6" disabled={isGenerating}>
+            <legend className="sr-only">Image workflow</legend>
+            <div className="grid gap-3 md:grid-cols-2">
+              {WORKFLOW_OPTIONS.map((option) => (
+                <label className="cursor-pointer" key={option.value}>
+                  <input
+                    checked={workflowMode === option.value}
+                    className="peer sr-only"
+                    name="image-workflow"
+                    onChange={() => changeWorkflowMode(option.value)}
+                    type="radio"
+                    value={option.value}
+                  />
+                  <span className="block h-full rounded-control border border-border-soft bg-app/70 p-4 transition peer-checked:border-accent-cyan/60 peer-checked:bg-accent-cyan/10 peer-focus-visible:ring-2 peer-focus-visible:ring-accent-cyan/40">
+                    <span className="font-semibold text-text-primary">
+                      {option.label}
+                    </span>
+                    <span className="mt-1 block text-sm leading-6 text-text-secondary">
+                      {option.description}
+                    </span>
+                  </span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
+          <p
+            aria-live="polite"
+            className="mt-4 text-sm leading-6 text-text-secondary"
+          >
+            {missingSelections.length > 0
+              ? `Still required for this workflow: ${missingSelections.join(", ")}.`
+              : "All required workflow inputs are ready."}
+          </p>
+        </Card>
+        <Card className="p-5 sm:p-6">
+          <SectionHeading
             description="Only owned, available library records are shown. Archived products and inactive catalog records are excluded."
-            title="1. Select creative direction"
+            title="2. Select creative direction"
           />
           <div className="mt-6 grid gap-5 md:grid-cols-2">
             <SelectField
@@ -451,22 +551,35 @@ export function ImageGenerator({
               placeholder="Select a product"
               value={productId}
             />
-            <SelectField
-              disabled={isGenerating}
-              emptyHref="/fashion-studio/models"
-              emptyLabel="Model Library"
-              id="generator-model"
-              label="Model"
-              onChange={(value) =>
-                changeCompositionSelection(setModelId, value)
-              }
-              options={models.map((record) => ({
-                id: record.id,
-                name: record.name,
-              }))}
-              placeholder="Select a model"
-              value={modelId}
-            />
+            {workflowMode === IMAGE_WORKFLOW_MODES.modelWear ? (
+              <SelectField
+                disabled={isGenerating}
+                emptyHref="/fashion-studio/models"
+                emptyLabel="Model Library"
+                id="generator-model"
+                label="Model"
+                onChange={(value) =>
+                  changeCompositionSelection(setModelId, value)
+                }
+                options={models.map((record) => ({
+                  id: record.id,
+                  name: record.name,
+                }))}
+                placeholder="Select a model"
+                value={modelId}
+              />
+            ) : (
+              <div>
+                <p className="mb-2 text-sm font-semibold text-text-primary">
+                  Model
+                </p>
+                <div className="min-h-12 rounded-control border border-border-soft bg-surface-soft px-4 py-3 text-sm leading-6 text-text-secondary">
+                  {model
+                    ? `${model.name} remains selected for AI Model Wear and is ignored in this workflow.`
+                    : "No model is needed for Mannequin Scene."}
+                </div>
+              </div>
+            )}
             <SelectField
               disabled={isGenerating}
               emptyHref="/fashion-studio/styles"
@@ -500,6 +613,34 @@ export function ImageGenerator({
               value={presetId}
             />
           </div>
+
+          <fieldset className="mt-6" disabled={isGenerating}>
+            <legend className="text-sm font-semibold text-text-primary">
+              Aspect ratio
+            </legend>
+            <div className="mt-3 grid gap-3 sm:grid-cols-3">
+              {ASPECT_RATIOS.map((option) => (
+                <label className="cursor-pointer" key={option.value}>
+                  <input
+                    checked={aspectRatio === option.value}
+                    className="peer sr-only"
+                    name="aspect-ratio"
+                    onChange={() => changeAspectRatio(option.value)}
+                    type="radio"
+                    value={option.value}
+                  />
+                  <span className="block rounded-control border border-border-soft bg-app/70 p-4 text-center transition peer-checked:border-accent-cyan/60 peer-checked:bg-accent-cyan/10 peer-focus-visible:ring-2 peer-focus-visible:ring-accent-cyan/40">
+                    <span className="font-semibold text-text-primary">
+                      {option.label}
+                    </span>
+                    <span className="mt-1 block text-xs text-text-secondary">
+                      {option.description}
+                    </span>
+                  </span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
         </Card>
 
         <Card className="p-5 sm:p-6">
@@ -510,7 +651,7 @@ export function ImageGenerator({
               ) : undefined
             }
             description="This source-of-truth output is composed deterministically and never changes when AI enhancement runs."
-            title="2. Review Final Prompt"
+            title="3. Review Final Prompt"
           />
           {finalPrompt ? (
             <pre className="mt-6 max-h-[28rem] max-w-full overflow-auto whitespace-pre-wrap break-words rounded-control border border-border-soft bg-app/70 p-4 font-sans text-sm leading-6 text-text-primary">
@@ -522,7 +663,9 @@ export function ImageGenerator({
                 Your deterministic prompt will appear here.
               </p>
               <p className="mt-2 text-sm leading-6 text-text-secondary">
-                Select a product, model, style, and prompt preset to compose it.
+                {workflowMode === IMAGE_WORKFLOW_MODES.modelWear
+                  ? "Select a product, model, style, and prompt preset to compose it."
+                  : "Select a product, style, and prompt preset to compose it. A model is not used in this workflow."}
               </p>
             </div>
           )}
@@ -586,7 +729,7 @@ export function ImageGenerator({
         <Card className="border-accent-cyan/30 p-5 sm:p-6">
           <SectionHeading
             description="Copy your selected prompt and generate in the image tool you prefer. This is the recommended V1 workflow."
-            title="3. External Generation"
+            title="4. External Generation"
           />
 
           <fieldset className="mt-6" disabled={!finalPrompt || isGenerating}>
@@ -693,7 +836,7 @@ export function ImageGenerator({
         </Card>
 
         <Card className="p-5 sm:p-6">
-          <SectionHeading title="Save external generated image" description="A separate durable asset; Direct API previews below remain temporary." />
+          <SectionHeading title="Save external generated image" description="A separate durable asset; Direct API previews, when available, remain temporary." />
           <div className="mt-5">
             {project ? (
               <GeneratedImageUpload key={project.id} projectId={project.id} projectName={project.name} suggestedPrompt={selectedPrompt} suggestedRatio={aspectRatio} />
@@ -706,71 +849,75 @@ export function ImageGenerator({
         <Card className="p-5 sm:p-6">
           <SectionHeading
             description="Optional. Provider API access and quota or billing may be required. If it is unavailable, external generation remains available."
-            title="4. Direct API Generation"
+            title="5. Direct API Generation"
           />
 
-          <fieldset className="mt-6" disabled={isGenerating}>
-            <legend className="text-sm font-semibold text-text-primary">
-              Aspect ratio
-            </legend>
-            <div className="mt-3 grid gap-3 sm:grid-cols-3">
-              {ASPECT_RATIOS.map((option) => (
-                <label className="cursor-pointer" key={option.value}>
-                  <input
-                    checked={aspectRatio === option.value}
-                    className="peer sr-only"
-                    name="aspect-ratio"
-                    onChange={() => changeAspectRatio(option.value)}
-                    type="radio"
-                    value={option.value}
-                  />
-                  <span className="block rounded-control border border-border-soft bg-app/70 p-4 text-center transition peer-checked:border-accent-cyan/60 peer-checked:bg-accent-cyan/10 peer-focus-visible:ring-2 peer-focus-visible:ring-accent-cyan/40">
-                    <span className="font-semibold text-text-primary">
-                      {option.label}
-                    </span>
-                    <span className="mt-1 block text-xs text-text-secondary">
-                      {option.description}
-                    </span>
-                  </span>
-                </label>
-              ))}
+          {workflowMode === IMAGE_WORKFLOW_MODES.modelWear ? (
+            <>
+              {generationError ? (
+                <p
+                  aria-live="polite"
+                  className="mt-5 rounded-control border border-red-400/25 bg-red-400/10 p-4 text-sm leading-6 text-accent-danger"
+                  role="alert"
+                >
+                  {generationError}
+                </p>
+              ) : null}
+
+              <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-sm leading-6 text-text-secondary">
+                  {missingSelections.length > 0
+                    ? `Still required: ${missingSelections.join(", ")}.`
+                    : `${promptVariant === "enhanced" ? "Enhanced" : "Final"} Prompt selected at ${aspectRatio}.`}
+                </p>
+                <Button
+                  disabled={!canGenerate}
+                  onClick={generateImage}
+                  type="button"
+                >
+                  {isGenerating ? "Generating Image..." : "Generate Image"}
+                </Button>
+              </div>
+            </>
+          ) : (
+            <div className="mt-6 rounded-control border border-accent-violet/25 bg-accent-violet/10 p-4 text-sm leading-6 text-text-secondary">
+              <p className="font-semibold text-text-primary">
+                External generation only in V1
+              </p>
+              <p className="mt-2">
+                Direct API generation is unavailable for Mannequin Scene in V1
+                because preserving the original mannequin and product requires a
+                reference-image workflow. Copy the prompt and use an external
+                image tool.
+              </p>
             </div>
-          </fieldset>
-
-          {generationError ? (
-            <p
-              aria-live="polite"
-              className="mt-5 rounded-control border border-red-400/25 bg-red-400/10 p-4 text-sm leading-6 text-accent-danger"
-              role="alert"
-            >
-              {generationError}
-            </p>
-          ) : null}
-
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-sm leading-6 text-text-secondary">
-              {missingSelections.length > 0
-                ? `Still required: ${missingSelections.join(", ")}.`
-                : `${promptVariant === "enhanced" ? "Enhanced" : "Final"} Prompt selected at ${aspectRatio}.`}
-            </p>
-            <Button
-              disabled={!canGenerate}
-              onClick={generateImage}
-              type="button"
-            >
-              {isGenerating ? "Generating Image..." : "Generate Image"}
-            </Button>
-          </div>
+          )}
         </Card>
       </div>
 
-      <ImagePreviewPanel
-        aspectRatio={aspectRatio || null}
-        isGenerating={isGenerating}
-        mimeType={preview?.mimeType ?? null}
-        onGenerateAgain={generateImage}
-        previewUrl={preview?.url ?? null}
-      />
+      {workflowMode === IMAGE_WORKFLOW_MODES.modelWear ? (
+        <ImagePreviewPanel
+          aspectRatio={aspectRatio || null}
+          isGenerating={isGenerating}
+          mimeType={preview?.mimeType ?? null}
+          onGenerateAgain={generateImage}
+          previewUrl={preview?.url ?? null}
+        />
+      ) : (
+        <Card className="h-fit p-5 sm:p-6 2xl:sticky 2xl:top-6">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent-violet">
+            Mannequin Scene
+          </p>
+          <h2 className="mt-2 text-lg font-semibold tracking-tight text-text-primary">
+            External-first workflow
+          </h2>
+          <p className="mt-3 text-sm leading-6 text-text-secondary">
+            Copy the deterministic prompt, use an external tool with the original
+            mannequin image as its reference, then return to save the result to
+            this project.
+          </p>
+        </Card>
+      )}
     </div>
   );
 }
